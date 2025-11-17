@@ -1,10 +1,12 @@
+# AI Usage - AI assisted with explanations, debugging, code structure, and implementation guidance.
+
 """
 COMP 163 - Project 3: Quest Chronicles
 Character Manager Module - Starter Code
 
-Name: [Your Name Here]
+Name: [Kurkeli Kurkeli]
 
-AI Usage: [Document any AI assistance used]
+AI Usage: [Helped with debugging, structuring my code and explanations.]
 
 This module handles character creation, loading, and saving.
 """
@@ -24,37 +26,48 @@ from custom_exceptions import (
 
 def create_character(name, character_class):
     """
-    Create a new character with stats based on class
-    
-    Valid classes: Warrior, Mage, Rogue, Cleric
-    
-    Returns: Dictionary with character data including:
-            - name, class, level, health, max_health, strength, magic
-            - experience, gold, inventory, active_quests, completed_quests
-    
-    Raises: InvalidCharacterClassError if class is not valid
+    Create a new character with stats based on class.
     """
-    # TODO: Implement character creation
-    # Validate character_class first
-    # Example base stats:
-    # Warrior: health=120, strength=15, magic=5
-    # Mage: health=80, strength=8, magic=20
-    # Rogue: health=90, strength=12, magic=10
-    # Cleric: health=100, strength=10, magic=15
-    
-    # All characters start with:
-    # - level=1, experience=0, gold=100
-    # - inventory=[], active_quests=[], completed_quests=[]
-    
-    # Raise InvalidCharacterClassError if class not in valid list
-    pass
+    # Valid classes
+    valid_classes = {
+        "Warrior": {"health": 120, "strength": 15, "magic": 5},
+        "Mage": {"health": 90, "strength": 8, "magic": 20},
+        "Rogue": {"health": 100, "strength": 12, "magic": 10},
+        "Cleric": {"health": 110, "strength": 10, "magic": 15}
+    }
+
+    # Validate class
+    if character_class not in valid_classes:
+        raise InvalidCharacterClassError(f"Invalid class: {character_class}")
+
+    # Get the base stats
+    base = valid_classes[character_class]
+
+    # Build the character dictionary
+    character = {
+        "name": name,
+        "class": character_class,
+        "level": 1,
+        "health": base["health"],
+        "max_health": base["health"],
+        "strength": base["strength"],
+        "magic": base["magic"],
+        "experience": 0,
+        "gold": 100,
+        "inventory": [],
+        "active_quests": [],
+        "completed_quests": []
+    }
+
+    return character
+
 
 def save_character(character, save_directory="data/save_games"):
     """
-    Save character to file
-    
+    Save character to file.
+
     Filename format: {character_name}_save.txt
-    
+
     File format:
     NAME: character_name
     CLASS: class_name
@@ -68,15 +81,39 @@ def save_character(character, save_directory="data/save_games"):
     INVENTORY: item1,item2,item3
     ACTIVE_QUESTS: quest1,quest2
     COMPLETED_QUESTS: quest1,quest2
-    
+
     Returns: True if successful
-    Raises: PermissionError, IOError (let them propagate or handle)
+    Raises: PermissionError, IOError (let them propagate)
     """
-    # TODO: Implement save functionality
-    # Create save_directory if it doesn't exist
-    # Handle any file I/O errors appropriately
-    # Lists should be saved as comma-separated values
-    pass
+    # Make sure the save directory exists
+    os.makedirs(save_directory, exist_ok=True)
+
+    filename = f"{character['name']}_save.txt"
+    filepath = os.path.join(save_directory, filename)
+
+    # Helper to convert list -> comma separated string
+    def list_to_str(value):
+        if isinstance(value, list):
+            return ",".join(str(v) for v in value)
+        return str(value)
+
+    # Let any file I/O exceptions propagate
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(f"NAME: {character['name']}\n")
+        f.write(f"CLASS: {character['class']}\n")
+        f.write(f"LEVEL: {character['level']}\n")
+        f.write(f"HEALTH: {character['health']}\n")
+        f.write(f"MAX_HEALTH: {character['max_health']}\n")
+        f.write(f"STRENGTH: {character['strength']}\n")
+        f.write(f"MAGIC: {character['magic']}\n")
+        f.write(f"EXPERIENCE: {character['experience']}\n")
+        f.write(f"GOLD: {character['gold']}\n")
+        f.write(f"INVENTORY: {list_to_str(character['inventory'])}\n")
+        f.write(f"ACTIVE_QUESTS: {list_to_str(character['active_quests'])}\n")
+        f.write(f"COMPLETED_QUESTS: {list_to_str(character['completed_quests'])}\n")
+
+    return True
+
 
 def load_character(character_name, save_directory="data/save_games"):
     """
